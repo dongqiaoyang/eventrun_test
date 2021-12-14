@@ -85,8 +85,8 @@ def create_agg():
     # client = bigquery.Client(credentials=credentials, project=credentials.project_id,)
     client=bigquery.Client()
     query = """
-# INSERT test_dataset.data (run_id) VALUES("call_success")
-INSERT `cto-datahub-bi-staging-pr-3437.source_data.data` (run_id, run_ts) VALUES("ios", CURRENT_DATE())
+INSERT test_dataset.data (run_id) VALUES("call_success")
+# INSERT `cto-datahub-bi-staging-pr-3437.source_data.data` (run_id, run_ts) VALUES("ios", CURRENT_DATE())
     """
     client.query(query)
     return query
