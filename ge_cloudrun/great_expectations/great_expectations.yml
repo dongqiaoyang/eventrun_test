@@ -1,0 +1,83 @@
+config_version: 3.0
+datasources:
+  ge_test_datasource:
+    module_name: great_expectations.datasource
+    class_name: Datasource
+    data_connectors:
+      default_runtime_data_connector_name:
+        batch_identifiers:
+          - default_identifier_name
+        module_name: great_expectations.datasource.data_connector
+        class_name: RuntimeDataConnector
+      default_inferred_data_connector_name:
+        module_name: great_expectations.datasource.data_connector
+        class_name: InferredAssetSqlDataConnector
+    execution_engine:
+      module_name: great_expectations.execution_engine
+      connection_string: bigquery://vertex-test-335204/ge_test
+      class_name: SqlAlchemyExecutionEngine
+  ge-test_datasource:
+    module_name: great_expectations.datasource
+    class_name: Datasource
+    data_connectors:
+      default_runtime_data_connector_name:
+        batch_identifiers:
+          - default_identifier_name
+        module_name: great_expectations.datasource.data_connector
+        class_name: RuntimeDataConnector
+    execution_engine:
+      module_name: great_expectations.execution_engine
+      connection_string: bigquery://acn-montreal-ai-hackathon/GCPQuickStart
+      class_name: SqlAlchemyExecutionEngine
+config_variables_file_path: uncommitted/config_variables.yml
+stores:
+  expectations_gcs_store:
+    class_name: ExpectationsStore
+    store_backend:
+      class_name: TupleGCSStoreBackend
+      project: acn-montreal-ai-hackathon
+      bucket: acn-montreal-ai-hackathon-ge_test-2
+      prefix: expect
+      manually_initialize_store_backend_id: 00000000-0000-0000-0000-00000000e003
+  validations_gcs_store:
+    class_name: ValidationsStore
+    store_backend:
+      class_name: TupleGCSStoreBackend
+      project: acn-montreal-ai-hackathon
+      bucket: acn-montreal-ai-hackathon-ge_test-2
+      prefix: validate
+  evaluation_parameter_store:
+    class_name: EvaluationParameterStore
+expectations_store_name: expectations_gcs_store
+validations_store_name: validations_gcs_store
+evaluation_parameter_store_name: evaluation_parameter_store
+data_docs_sites:
+  gcs_site:
+    class_name: SiteBuilder
+    store_backend:
+      class_name: TupleGCSStoreBackend
+      project: vertex-test-335204
+      bucket: ge_test
+    site_index_builder:
+      class_name: DefaultSiteIndexBuilder
+# validation_operators:
+#   action_list_operator:
+#     class_name: ActionListValidationOperator
+#     action_list:
+#       - name: store_validation_result
+#         action:
+#           class_name: StoreValidationResultAction
+#       - name: store_evaluation_params
+#         action:
+#           class_name: StoreEvaluationParametersAction
+#       - name: update_data_docs
+#         action:
+#           class_name: UpdateDataDocsAction
+
+anonymous_usage_statistics:
+  enabled: true
+  data_context_id: 00000000-0000-0000-0000-00000000e003
+concurrency:
+  enabled: false
+plugins_directory:
+notebooks:
