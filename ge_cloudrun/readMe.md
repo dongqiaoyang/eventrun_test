@@ -2,7 +2,7 @@
 ```bash
 gcloud pubsub subscriptions create cloud-run --topic cloud-run-topic \
    --push-endpoint=https://hellopubsub-tqjcrev3ga-nn.a.run.app/ \
-   --push-auth-service-account=scheduler-test@cio-exegol-lab-3dabae.iam.gserviceaccount.com
+   --push-auth-service-account=scheduler-test@cio-exegol-lab-3dabae.iam.gserviceaccount.com --ack-deadline=600
 ```
 
 # Build the image
