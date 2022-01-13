@@ -8,13 +8,27 @@ from flask import Flask, request
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
+
+from google.cloud import storage
+import ruamel.yaml as yaml
+from typing import Any
+import logging
+import os
+from typing import Any, Dict
+import ast
+
+import great_expectations as ge
+from great_expectations.checkpoint import SimpleCheckpoint
+from great_expectations.checkpoint.types.checkpoint_result import CheckpointResult
+from great_expectations.core.batch import RuntimeBatchRequest
+from great_expectations.data_context import BaseDataContext
+from great_expectations.data_context.types.base import DataContextConfig
+
+import warnings
+
+### Main app
 app = Flask(__name__)
-# [END run_pubsub_server_setup]
-# [END cloudrun_pubsub_server_setup]
-
-
-# [START cloudrun_pubsub_handler]
-# [START run_pubsub_handler]
+    
 @app.route("/", methods=["POST"])
 def index():
     envelope = request.get_json()
@@ -30,78 +44,46 @@ def index():
 
     pubsub_message = envelope["message"]
 
-    name = "World"
+    parameter = "World"
     if isinstance(pubsub_message, dict) and "data" in pubsub_message:
-        name = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
+        parameter = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
 
-    print(f"Hello {name}!")
-    query = create_agg()
-    ge=ge_run()
+    print(parameter)
+    parameter=ast.literal_eval(str(parameter))
+    print(parameter)
     
-    return "table created", 204
+    try:
+        print("start ge")
+        ge=ge_run(parameter)
+        print("ge finished")
+    finally:
+        return "", 204
     
-    # return ("", 204)
-
-def create_agg():
-    client=bigquery.Client()
-    query = """
-INSERT test_dataset.data_2 (run_id, run_ts) VALUES("call_success", current_timestamp())
-# INSERT test_dataset.data (run_id, run_ts) VALUES("call_success", current_date())
-# INSERT `cto-datahub-bi-staging-pr-3437.source_data.data` (run_id, run_ts) VALUES("ios", CURRENT_DATE())
-    """
-    print(query)
-    client.query(query)
-    return query
+def ge_run(parameter):
     
+    print('process starts')
+    print(parameter)
+    print(type(parameter))
+    parameter=ast.literal_eval(str(parameter))
+    print(type(parameter))
     
-# [END run_pubsub_handler]
-# [END cloudrun_pubsub_handler]
-
-
-def ge_run():
-    from google.cloud import storage
-    import ruamel.yaml as yaml
-    from typing import Any
-    import logging
-    import os
-    from typing import Any, Dict
-
-    import great_expectations as ge
-    from great_expectations.checkpoint import SimpleCheckpoint
-    from great_expectations.checkpoint.types.checkpoint_result import CheckpointResult
-    from great_expectations.core.batch import RuntimeBatchRequest
-    from great_expectations.data_context import BaseDataContext
-    from great_expectations.data_context.types.base import DataContextConfig
-
-
-    import warnings
-    warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
-
-
-    # project_id = 'vertex-test-335204'
-    project_id='cio-exegol-lab-3dabae'
-
-    dataset_id = 'ge_test'
-    bucket_id = 'cio-exegol-lab-3dabae-ge-test'
-    connection_str = f'bigquery://{project_id}/{dataset_id}'
+    # project_id='cio-exegol-lab-3dabae'
+    # dataset_id = 'ge_test'
+    # bucket_id = 'cio-exegol-lab-3dabae-ge-test'
+    # bigquery_dataset = 'ge_test'
+    
+    project_id=parameter['project_id']
+    dataset_id = parameter['dataset_id']
+    bucket_id = parameter['bucket_id']
+    bigquery_dataset = parameter['bigquery_dataset']
+    
     datasource_name = 'ge-test_datasource'
     data_asset_name = 'test-ge'
 
-    gcp_project = project_id
-    bigquery_dataset = 'ge_test'
+    connection_str = f"bigquery://{project_id}/{bigquery_dataset}"
 
-    connection_str = f"bigquery://{gcp_project}/{bigquery_dataset}"
-
+    ### Add datasource configuration
+    print('adding datasource')
     context = ge.get_context()
     datasource_yaml = f"""
     name: {datasource_name}
@@ -116,11 +98,10 @@ def ge_run():
                - default_identifier_name
     """
 
-
     context.test_yaml_config(datasource_yaml)
     context.add_datasource(**yaml.safe_load(datasource_yaml))
 
-
+    ## Add store configurations 
     store_yaml = f"""
     stores:
       expectations_gcs_store:
@@ -137,7 +118,6 @@ def ge_run():
         store_name=store_yaml["expectations_store_name"],
         store_config=store_yaml["stores"]["expectations_gcs_store"],
     )
-
 
     val_yaml = f"""
     stores:
@@ -158,6 +138,8 @@ def ge_run():
         store_config=val_yaml["stores"]["validations_gcs_store"],
     )
 
+    ### Running Expectation
+    print('running expectation')
 
     batch_request = RuntimeBatchRequest(
         datasource_name=datasource_name,
@@ -170,7 +152,7 @@ def ge_run():
             "bigquery_temp_table": "ge_temp"
         },
     )
-
+        
     expectation_suite_name = "ge-test-suite"
     context.create_expectation_suite(
         expectation_suite_name=expectation_suite_name,
@@ -181,10 +163,15 @@ def ge_run():
         batch_request=batch_request,
         expectation_suite_name="ge-test-suite"
     )
-
+    
+    # Expectations
     batch.expect_column_values_to_not_be_null(column="first_name")
+    
     batch.save_expectation_suite(discard_failed_expectations=False)
 
+    ### Run Validation
+    print("running validation")
+    
     checkpoint_name = 'test-check'
     checkpoint_config = {
         "config_version": 1.0,
@@ -203,14 +190,11 @@ def ge_run():
         data_context=context,
         **checkpoint_config
     )
+    
     checkpoint_result = checkpoint.run()
-
     
+    return '', 200
     
-    
-    
-    
-
 if __name__ == "__main__":
     PORT = int(os.getenv("PORT")) if os.getenv("PORT") else 8080
 
