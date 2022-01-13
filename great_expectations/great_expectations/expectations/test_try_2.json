@@ -1,0 +1,180 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "test_try_2",
+  "expectations": [
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": {
+        "column": "pickup_location_id"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_type_list",
+      "kwargs": {
+        "column": "pickup_location_id",
+        "type_list": [
+          "INTEGER",
+          "integer",
+          "int",
+          "int_",
+          "int8",
+          "int16",
+          "int32",
+          "int64",
+          "uint8",
+          "uint16",
+          "uint32",
+          "uint64",
+          "INT",
+          "INTEGER",
+          "INT64",
+          "TINYINT",
+          "BYTEINT",
+          "SMALLINT",
+          "BIGINT",
+          "IntegerType",
+          "LongType"
+        ]
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "pickup_location_id"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": {
+        "column": "vendor_id"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "vendor_id",
+        "value_set": [
+          1,
+          2,
+          4
+        ]
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "vendor_id"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": {
+        "column": "store_and_fwd_flag"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_type_list",
+      "kwargs": {
+        "column": "store_and_fwd_flag",
+        "type_list": [
+          "BOOLEAN",
+          "boolean",
+          "BOOL",
+          "TINYINT",
+          "BIT",
+          "bool",
+          "BooleanType"
+        ]
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_set",
+      "kwargs": {
+        "column": "store_and_fwd_flag",
+        "value_set": [
+          true,
+          false
+        ]
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "store_and_fwd_flag"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": {
+        "column": "passenger_count"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_type_list",
+      "kwargs": {
+        "column": "passenger_count",
+        "type_list": [
+          "INTEGER",
+          "integer",
+          "int",
+          "int_",
+          "int8",
+          "int16",
+          "int32",
+          "int64",
+          "uint8",
+          "uint16",
+          "uint32",
+          "uint64",
+          "INT",
+          "INTEGER",
+          "INT64",
+          "TINYINT",
+          "BYTEINT",
+          "SMALLINT",
+          "BIGINT",
+          "IntegerType",
+          "LongType"
+        ]
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "passenger_count",
+        "max_value": 130,
+        "min_value": 0
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "passenger_count"
+      },
+      "meta": {}
+    }
+  ],
+  "ge_cloud_id": null,
+  "meta": {
+    "citations": [
+      {
+        "citation_date": "2022-01-13T21:04:17.731890Z",
+        "comment": "This suite was built by the JsonSchemaProfiler"
+      }
+    ],
+    "great_expectations_version": "0.14.0"
+  }
+}

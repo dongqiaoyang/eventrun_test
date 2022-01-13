@@ -18,5 +18,5 @@ gcloud run deploy hellopubsub --image gcr.io/cio-exegol-lab-3dabae/hellopubsub -
 ## Test by submitting a pubsub message
 
 ```bash
-gcloud pubsub topics publish cloud-run-topic --message "Runner"
+gcloud pubsub topics publish cloud-run-topic --message '{"project_id":"cio-exegol-lab-3dabae", "dataset_id": "ge_test", "bucket_id": "cio-exegol-lab-3dabae-ge-test", "bigquery_dataset": "ge_test", "query": "SELECT * FROM ge_test.test_table1", "properties" :{"pickup_location_id": {"type": "integer"}, "vendor_id": {"enum": [1, 2, 4]}, "store_and_fwd_flag": {"type": "boolean"}, "passenger_count": {"type": "integer", "minimum": 0, "maximum": 130}}}'
 ```

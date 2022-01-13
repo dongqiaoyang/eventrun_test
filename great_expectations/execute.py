@@ -47,92 +47,117 @@ context.add_datasource(**datasource_config)
 
 # Create the expectation suites
 
-context = ge.data_context.DataContext()
-
-
 # Feel free to change the name of your suite here. Renaming this will not remove the other one.
-expectation_suite_name = "test_try"
-try:
-    suite = context.get_expectation_suite(expectation_suite_name=expectation_suite_name)
-    print(f'Loaded ExpectationSuite "{suite.expectation_suite_name}" containing {len(suite.expectations)} expectations.')
-except DataContextError:
-    suite = context.create_expectation_suite(expectation_suite_name=expectation_suite_name)
-    print(f'Created ExpectationSuite "{suite.expectation_suite_name}".')
-	
+# expectation_suite_name = "test_try"
+# try:
+    # suite = context.get_expectation_suite(expectation_suite_name=expectation_suite_name)
+    # print(f'Loaded ExpectationSuite "{suite.expectation_suite_name}" containing {len(suite.expectations)} expectations.')
+# except DataContextError:
+    # suite = context.create_expectation_suite(expectation_suite_name=expectation_suite_name)
+    # print(f'Created ExpectationSuite "{suite.expectation_suite_name}".')
+
+import json	
+from great_expectations.profile.json_schema_profiler import JsonSchemaProfiler
+
+jsonschema_file = "ge_suite_2.json"
+suite_name = "test_try_2"
+context = ge.data_context.DataContext()
+with open(jsonschema_file, "r") as f:
+    schema = json.load(f)
+
+suite_name = "test_try_2"
+simple_schema= {
+        "$id": "https://example.com/address.schema.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+            "pickup_location_id": {"type": "integer"},
+            "vendor_id": {"type": "integer"},
+            "store_and_fwd_flag": {"type": "boolean"},
+            "vendor_id": {"enum": [1,2,4]},
+            "passenger_count": {"type": "integer", "minimum": 0, "maximum": 130}
+        }
+    }
+    
+print("Generating suite...")
+profiler = JsonSchemaProfiler()
+suite = profiler.profile(simple_schema, suite_name)
+context.save_expectation_suite(suite)
+
 
 # create expectation 
 
-expectation_configuration = ExpectationConfiguration(
-   expectation_type="expect_column_values_to_be_in_set",
-   kwargs={
-      "column": "payment_type",
-      "value_set": [1,2,3]
-   },
-    meta={
-    "notes": {
-     "format": "markdown",
-     "content": "check the expected values"
-    }
-    }
-   # Note optional comments omitted
-)
-suite.add_expectation(expectation_configuration=expectation_configuration)
+# expectation_configuration = ExpectationConfiguration(
+   # expectation_type="expect_column_values_to_be_in_set",
+   # kwargs={
+      # "column": "payment_type",
+      # "value_set": [1,2,3]
+   # },
+    # meta={
+    # "notes": {
+     # "format": "markdown",
+     # "content": "check the expected values"
+    # }
+    # }
+   # # Note optional comments omitted
+# )
+# suite.add_expectation(expectation_configuration=expectation_configuration)
 
-# Expectation 2
+# # Expectation 2
 
-expectation_configuration = ExpectationConfiguration(
-   # Name of expectation type being added
-   expectation_type="expect_table_columns_to_match_ordered_list",
-   # These are the arguments of the expectation
-   # The keys allowed in the dictionary are Parameters and
-   # Keyword Arguments of this Expectation Type
-   kwargs={
-      "column_list": [
-         "vendor_id", "pickup_datetime", "dropoff_datetime","passenger_count", "trip_distance", "rate_code_id", "store_and_fwd_flag", "pickup_location_id","dropoff_location_id", "payment_type", "fare_amount", "extra","mta_tax", "tip_amount","tolls_amount", "improvement_surcharge", "total_amount", "congestion_surcharge"
-      ]
-   },
-   # This is how you can optionally add a comment about this expectation.
-   # It will be rendered in Data Docs.
-   # See this guide for details:
-   # `How to add comments to Expectations and display them in Data Docs`.
-   meta={
-      "notes": {
-         "format": "markdown",
-         "content": "col orders"
-      }
-   }
-)
+# expectation_configuration = ExpectationConfiguration(
+   # # Name of expectation type being added
+   # expectation_type="expect_table_columns_to_match_ordered_list",
+   # # These are the arguments of the expectation
+   # # The keys allowed in the dictionary are Parameters and
+   # # Keyword Arguments of this Expectation Type
+   # kwargs={
+      # "column_list": [
+         # "vendor_id", "pickup_datetime", "dropoff_datetime","passenger_count", "trip_distance", "rate_code_id", "store_and_fwd_flag", "pickup_location_id","dropoff_location_id", "payment_type", "fare_amount", "extra","mta_tax", "tip_amount","tolls_amount", "improvement_surcharge", "total_amount", "congestion_surcharge"
+      # ]
+   # },
+   # # This is how you can optionally add a comment about this expectation.
+   # # It will be rendered in Data Docs.
+   # # See this guide for details:
+   # # `How to add comments to Expectations and display them in Data Docs`.
+   # meta={
+      # "notes": {
+         # "format": "markdown",
+         # "content": "col orders"
+      # }
+   # }
+# )
 
-suite.add_expectation(expectation_configuration=expectation_configuration)
+# suite.add_expectation(expectation_configuration=expectation_configuration)
 
-# Expectation 3
+# # Expectation 3
 
-expectation_configuration = ExpectationConfiguration(
-   expectation_type="expect_column_values_to_not_be_null",
-   kwargs={
-      "column": "vendor_id",
-      "mostly": 1.0,
-   },
-   meta={
-      "notes": {
-         "format": "markdown",
-         "content": "validate column not null"
-      }
-   }
-)
+# expectation_configuration = ExpectationConfiguration(
+   # expectation_type="expect_column_values_to_not_be_null",
+   # kwargs={
+      # "column": "vendor_id",
+      # "mostly": 1.0,
+   # },
+   # meta={
+      # "notes": {
+         # "format": "markdown",
+         # "content": "validate column not null"
+      # }
+   # }
+# )
 
-suite.add_expectation(expectation_configuration=expectation_configuration)
+# suite.add_expectation(expectation_configuration=expectation_configuration)
 
 
-# Add the Expectation to the suite
-suite.add_expectation(expectation_configuration=expectation_configuration)
+# # Add the Expectation to the suite
+# suite.add_expectation(expectation_configuration=expectation_configuration)
 
-# validate the expecation 
+# # validate the expecation 
 
-print(context.get_expectation_suite(expectation_suite_name=expectation_suite_name))
-context.save_expectation_suite(expectation_suite=suite, expectation_suite_name=expectation_suite_name)
+# print(context.get_expectation_suite(expectation_suite_name=expectation_suite_name))
+# context.save_expectation_suite(expectation_suite=suite, expectation_suite_name=expectation_suite_name)
 
-suite_identifier = ExpectationSuiteIdentifier(expectation_suite_name=expectation_suite_name)
+# suite_identifier = ExpectationSuiteIdentifier(expectation_suite_name=expectation_suite_name)
 # context.build_data_docs(resource_identifiers=[suite_identifier])
 # context.open_data_docs(resource_identifier=suite_identifier)
 
@@ -144,7 +169,7 @@ suite_identifier = ExpectationSuiteIdentifier(expectation_suite_name=expectation
 
 from great_expectations.checkpoint import SimpleCheckpoint
 
-expectation_suite_name = "test_try"
+expectation_suite_name = suite_name
 
 
 batch_request = RuntimeBatchRequest(

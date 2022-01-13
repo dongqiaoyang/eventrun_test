@@ -15,41 +15,41 @@ config_version: 3.0
 # add a new datasource. Read more at https://docs.greatexpectations.io/en/latest/reference/core_concepts/datasource.html
 datasources:
   getting_started_datasource:
-    execution_engine:
-      module_name: great_expectations.execution_engine
-      class_name: PandasExecutionEngine
-    module_name: great_expectations.datasource
     data_connectors:
       default_inferred_data_connector_name:
-        module_name: great_expectations.datasource.data_connector
-        class_name: InferredAssetFilesystemDataConnector
-        base_directory: ..\data
         default_regex:
           group_names:
             - data_asset_name
           pattern: (.*)
+        class_name: InferredAssetFilesystemDataConnector
+        base_directory: ..\data
+        module_name: great_expectations.datasource.data_connector
       default_runtime_data_connector_name:
+        class_name: RuntimeDataConnector
         batch_identifiers:
           - default_identifier_name
         module_name: great_expectations.datasource.data_connector
-        class_name: RuntimeDataConnector
     class_name: Datasource
-  my_bigquery_datasource:
-    execution_engine:
-      module_name: great_expectations.execution_engine
-      class_name: SqlAlchemyExecutionEngine
-      connection_string: bigquery://acn-montreal-ai-hackathon/GCPQuickStart
     module_name: great_expectations.datasource
+    execution_engine:
+      class_name: PandasExecutionEngine
+      module_name: great_expectations.execution_engine
+  my_bigquery_datasource:
     data_connectors:
       default_runtime_data_connector_name:
+        class_name: RuntimeDataConnector
         batch_identifiers:
           - default_identifier_name
         module_name: great_expectations.datasource.data_connector
-        class_name: RuntimeDataConnector
       default_inferred_data_connector_name:
-        module_name: great_expectations.datasource.data_connector
         class_name: InferredAssetSqlDataConnector
+        module_name: great_expectations.datasource.data_connector
     class_name: Datasource
+    module_name: great_expectations.datasource
+    execution_engine:
+      class_name: SqlAlchemyExecutionEngine
+      connection_string: bigquery://acn-montreal-ai-hackathon/GCPQuickStart
+      module_name: great_expectations.execution_engine
 config_variables_file_path: uncommitted/config_variables.yml
 
 # The plugins_directory will be added to your python path for custom modules

@@ -3,69 +3,93 @@
   "expectation_suite_name": "test_try",
   "expectations": [
     {
-      "expectation_type": "expect_column_values_to_be_in_set",
+      "expectation_type": "expect_column_to_exist",
       "kwargs": {
-        "column": "payment_type",
-        "value_set": [
-          1,
-          2,
-          3
-        ]
+        "column": "first_name"
       },
-      "meta": {
-        "notes": {
-          "content": "check the expected values",
-          "format": "markdown"
-        }
-      }
+      "meta": {}
     },
     {
-      "expectation_type": "expect_table_columns_to_match_ordered_list",
+      "expectation_type": "expect_column_values_to_be_in_type_list",
       "kwargs": {
-        "column_list": [
-          "vendor_id",
-          "pickup_datetime",
-          "dropoff_datetime",
-          "passenger_count",
-          "trip_distance",
-          "rate_code_id",
-          "store_and_fwd_flag",
-          "pickup_location_id",
-          "dropoff_location_id",
-          "payment_type",
-          "fare_amount",
-          "extra",
-          "mta_tax",
-          "tip_amount",
-          "tolls_amount",
-          "improvement_surcharge",
-          "total_amount",
-          "congestion_surcharge"
+        "column": "first_name",
+        "type_list": [
+          "CHAR",
+          "NCHAR",
+          "VARCHAR",
+          "NVARCHAR",
+          "TEXT",
+          "NTEXT",
+          "STRING",
+          "StringType",
+          "string",
+          "str",
+          "object",
+          "dtype('O')"
         ]
       },
-      "meta": {
-        "notes": {
-          "content": "col orders",
-          "format": "markdown"
-        }
-      }
+      "meta": {}
     },
     {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
-        "column": "vendor_id",
-        "mostly": 1.0
+        "column": "first_name"
       },
-      "meta": {
-        "notes": {
-          "content": "validate column not null",
-          "format": "markdown"
-        }
-      }
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_to_exist",
+      "kwargs": {
+        "column": "age"
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_in_type_list",
+      "kwargs": {
+        "column": "age",
+        "type_list": [
+          "INTEGER",
+          "integer",
+          "int",
+          "int_",
+          "int8",
+          "int16",
+          "int32",
+          "int64",
+          "uint8",
+          "uint16",
+          "uint32",
+          "uint64",
+          "INT",
+          "INTEGER",
+          "INT64",
+          "TINYINT",
+          "BYTEINT",
+          "SMALLINT",
+          "BIGINT",
+          "IntegerType",
+          "LongType"
+        ]
+      },
+      "meta": {}
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": {
+        "column": "age"
+      },
+      "meta": {}
     }
   ],
   "ge_cloud_id": null,
   "meta": {
-    "great_expectations_version": "0.13.46"
+    "citations": [
+      {
+        "citation_date": "2022-01-13T20:29:40.091987Z",
+        "comment": "This suite was built by the JsonSchemaProfiler"
+      }
+    ],
+    "great_expectations_version": "0.14.0"
   }
 }

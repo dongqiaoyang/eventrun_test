@@ -16,6 +16,7 @@ import logging
 import os
 from typing import Any, Dict
 import ast
+from datetime import datetime
 
 import great_expectations as ge
 from great_expectations.checkpoint import SimpleCheckpoint
@@ -23,6 +24,7 @@ from great_expectations.checkpoint.types.checkpoint_result import CheckpointResu
 from great_expectations.core.batch import RuntimeBatchRequest
 from great_expectations.data_context import BaseDataContext
 from great_expectations.data_context.types.base import DataContextConfig
+from great_expectations.profile.json_schema_profiler import JsonSchemaProfiler
 
 import warnings
 
@@ -146,30 +148,51 @@ def ge_run(parameter):
         data_connector_name="default_runtime_data_connector_name",
         data_asset_name=data_asset_name,
         runtime_parameters={
-            "query": "SELECT * FROM ge_test.test_table1"},
+            "query": parameter['query']},
         batch_identifiers={"default_identifier_name": "default_identifier"},
         batch_spec_passthrough={
             "bigquery_temp_table": "ge_temp"
         },
     )
         
-    expectation_suite_name = "ge-test-suite"
-    context.create_expectation_suite(
-        expectation_suite_name=expectation_suite_name,
-        overwrite_existing=True
-    )
+    expectation_suite_name = "ge-test-suite" + "_" + str(datetime.now())
+    # context.create_expectation_suite(
+        # expectation_suite_name=expectation_suite_name,
+        # overwrite_existing=True
+    # )
+
+    simple_schema= {
+            "$id": "https://example.com/address.schema.json",
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "properties": parameter['properties']
+            # "properties": {
+                # "pickup_location_id": {"type": "integer"},
+                # "vendor_id": {"type": "integer"},
+                # "store_and_fwd_flag": {"type": "boolean"},
+                # "vendor_id": {"enum": [1,2,4]},
+                # "passenger_count": {"type": "integer", "minimum": 0, "maximum": 130}
+            # }
+        }
+        
+    print("Generating suite...")
+    profiler = JsonSchemaProfiler()
+    suite = profiler.profile(simple_schema, expectation_suite_name)
+    context.save_expectation_suite(suite)
+
 
     batch = context.get_validator(
         batch_request=batch_request,
-        expectation_suite_name="ge-test-suite"
+        expectation_suite_name=expectation_suite_name
     )
     
     # Expectations
-    batch.expect_column_values_to_not_be_null(column="first_name")
+    # batch.expect_column_values_to_not_be_null(column="first_name")
     
-    batch.save_expectation_suite(discard_failed_expectations=False)
+    # batch.save_expectation_suite(discard_failed_expectations=False)
 
     ### Run Validation
+    
     print("running validation")
     
     checkpoint_name = 'test-check'
