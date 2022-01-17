@@ -55,9 +55,13 @@ def index():
     print(parameter)
     
     try:
-        print("start ge")
-        ge=ge_run(parameter)
-        print("ge finished")
+        try:
+            print("start ge")
+            ge=ge_run(parameter)
+            print("ge finished")
+        except:
+            print('something went wrong')
+            return "", 204
     finally:
         return "", 204
     
@@ -154,7 +158,8 @@ def ge_run(parameter):
             "bigquery_temp_table": "ge_temp"
         },
     )
-        
+    
+    ### Expectations    
     expectation_suite_name = "ge-test-suite" + "_" + str(datetime.now())
     # context.create_expectation_suite(
         # expectation_suite_name=expectation_suite_name,
