@@ -54,16 +54,17 @@ def index():
     parameter=ast.literal_eval(str(parameter))
     print(parameter)
     
+    # try:
     try:
-        try:
-            print("start ge")
-            ge=ge_run(parameter)
-            print("ge finished")
-        except:
-            print('something went wrong')
-            return "", 204
-    finally:
-        return "", 204
+        print("start ge")
+        ge=ge_run(parameter)
+        print("ge finished")
+    except:
+        print('something went wrong')
+    
+    return "", 204
+    # finally:
+        # return "", 204
     
 def ge_run(parameter):
     
@@ -168,7 +169,8 @@ def ge_run(parameter):
 
     simple_schema= {
             "$id": "https://example.com/address.schema.json",
-            "$schema": "http://json-schema.org/draft-07/schema#",
+            # "$schema": "http://json-schema.org/draft-07/schema#",
+            "$schema": "/schema",
             "type": "object",
             "properties": parameter['properties']
             # "properties": {
