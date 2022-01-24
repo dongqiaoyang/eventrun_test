@@ -5,14 +5,18 @@ import base64
 import os
 import ast
 from flask import Flask, request
-
+import subprocess
 
 import warnings
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 
 ### Main app
-app = Flask(__name__)
+
+# app = Flask(__name__)
+app = FastAPI()
     
-@app.route("/", methods=["POST"])
+# @app.route("/", methods=["POST"])
+@app.post("/",  status_code=201)
 def index():
     envelope = request.get_json()
     if not envelope:
@@ -31,20 +35,34 @@ def index():
     if isinstance(pubsub_message, dict) and "data" in pubsub_message:
         parameter = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
 
-    try:
-        print("start ge")
-        ge=ge_run(parameter)
-        print("ge finished")
-    except:
-        print('something went wrong')
+    # try:
+        # print("start process")
+        # ge=ge_run(parameter)
+        # print("process finished")
+    # except:
+        # print('something went wrong')
     
-    return "", 204
+    print("start process")
+    # ge=bash_process(parameter)
     
-def ge_run(parameter):
+    # BackgroundTasks.add_task(bash_process)
+    
+    return "", 201
+    
+def bash_process(parameter):
     print(parameter)
-    import os
-    os.system('ls -l')
-    os.system('gcloud config list')
+    cp=subprocess.run(["ls", "-la"],text=True,check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    print(cp.stdout)
+    print(cp.stderr)
+    print(cp.returncode)
+
+    p=subprocess.run(['/bin/bash','execute.sh'], universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    print(p.stdout)
+    print(p.stderr)
+    print(p.returncode)
+    
+    return p
+    # print(p)
     
 if __name__ == "__main__":
     PORT = int(os.getenv("PORT")) if os.getenv("PORT") else 8080

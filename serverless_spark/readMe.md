@@ -1,4 +1,4 @@
-## Create firewall rule to allow traffics for serverless spark jobs
+ ## Create firewall rule to allow traffics for serverless spark jobs
 ``` bash
 gcloud compute firewall-rules create allow-internal-ingress --network=spark --source-ranges=10.0.0.0/8 --direction="ingress" --action="allow" --rules="all"
 ```
@@ -8,9 +8,38 @@ gcloud compute firewall-rules create allow-internal-ingress --network=spark --so
 gcloud beta dataproc batches submit pyspark --region northamerica-northeast1 --subnet projects/dse-cicd-test-lab-4c0841/regions/northamerica-northeast1/subnetworks/spark --service-account spark-serverless@dse-cicd-test-lab-4c0841.iam.gserviceaccount.com gs://dse-cicd-test-lab-4c0841-spark-scripts/sample.py
 ```
 
+## Send request from REST
+```bash
+curl -X POST -H "Authorization: Bearer "$(gcloud auth application-default print-access-token) -H "Content-Type: application/json; charset=utf-8" -d @request.json 	"https://dataproc.googleapis.com/v1/projects/dse-cicd-test-lab-4c0841/locations/northamerica-northeast1/batches"
+```
+
+### json request body
+```bash
+{
+  "pysparkBatch":{
+
+	"subnetworkUri": "projects/dse-cicd-test-lab-4c0841/regions/northamerica-northeast1/subnetworks/spark"
+	"mainPythonFileUris: ["gs://dse-cicd-test-lab-4c0841-spark-scripts/sample.py"],
+	"serviceAccount": "spark-serverless@dse-cicd-test-lab-4c0841.iam.gserviceaccount.com"
+	
+  }
+}
+```
+
 ## Build image
 ```bash
 gcloud builds submit --tag gcr.io/dse-cicd-test-lab-4c0841/sspark
+```
+
+## Deploy the image to Cloud Run 
+```bash
+gcloud run deploy sspark --image gcr.io/dse-cicd-test-lab-4c0841/sspark --region northamerica-northeast1 --service-account spark-serverless@dse-cicd-test-lab-4c0841.iam.gserviceaccount.com --timeout 600
+```
+
+# Create oubsub topic
+
+```bash
+gcloud pubsub topics create sspark
 ```
 
 # Create the pubsub subscription  
@@ -20,7 +49,3 @@ gcloud pubsub subscriptions create cloud-run --topic sspark \
    --push-auth-service-account=scheduler-test@cio-exegol-lab-3dabae.iam.gserviceaccount.com --ack-deadline=600
 ```
 
-## Deploy the image to Cloud Run 
-```bash
-gcloud run deploy sspark --image gcr.io/dse-cicd-test-lab-4c0841/sspark --region northamerica-northeast1 --service-account spark-serverless@dse-cicd-test-lab-4c0841.iam.gserviceaccount.com
-```
