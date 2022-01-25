@@ -33,7 +33,7 @@ gcloud builds submit --tag gcr.io/dse-cicd-test-lab-4c0841/sspark
 
 ## Deploy the image to Cloud Run 
 ```bash
-gcloud run deploy sspark --image gcr.io/dse-cicd-test-lab-4c0841/sspark --region northamerica-northeast1 --service-account spark-serverless@dse-cicd-test-lab-4c0841.iam.gserviceaccount.com --timeout 600
+gcloud beta run deploy sspark --image gcr.io/dse-cicd-test-lab-4c0841/sspark --region northamerica-northeast1 --service-account spark-serverless@dse-cicd-test-lab-4c0841.iam.gserviceaccount.com --timeout 600 --execution-environment gen2
 ```
 
 # Create oubsub topic
