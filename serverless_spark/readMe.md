@@ -8,24 +8,6 @@ gcloud compute firewall-rules create allow-internal-ingress --network=spark --so
 gcloud beta dataproc batches submit pyspark --region northamerica-northeast1 --subnet projects/dse-cicd-test-lab-4c0841/regions/northamerica-northeast1/subnetworks/spark --service-account spark-serverless@dse-cicd-test-lab-4c0841.iam.gserviceaccount.com gs://dse-cicd-test-lab-4c0841-spark-scripts/sample.py
 ```
 
-## Send request from REST
-```bash
-curl -X POST -H "Authorization: Bearer "$(gcloud auth application-default print-access-token) -H "Content-Type: application/json; charset=utf-8" -d @request.json 	"https://dataproc.googleapis.com/v1/projects/dse-cicd-test-lab-4c0841/locations/northamerica-northeast1/batches"
-```
-
-### json request body
-```bash
-{
-  "pysparkBatch":{
-
-	"subnetworkUri": "projects/dse-cicd-test-lab-4c0841/regions/northamerica-northeast1/subnetworks/spark"
-	"mainPythonFileUris: ["gs://dse-cicd-test-lab-4c0841-spark-scripts/sample.py"],
-	"serviceAccount": "spark-serverless@dse-cicd-test-lab-4c0841.iam.gserviceaccount.com"
-	
-  }
-}
-```
-
 ## Build image
 ```bash
 gcloud builds submit --tag gcr.io/dse-cicd-test-lab-4c0841/sspark
@@ -36,7 +18,7 @@ gcloud builds submit --tag gcr.io/dse-cicd-test-lab-4c0841/sspark
 gcloud beta run deploy sspark --image gcr.io/dse-cicd-test-lab-4c0841/sspark --region northamerica-northeast1 --service-account spark-serverless@dse-cicd-test-lab-4c0841.iam.gserviceaccount.com --timeout 600 --execution-environment gen2
 ```
 
-# Create oubsub topic
+# Create pubsub topic
 
 ```bash
 gcloud pubsub topics create sspark
