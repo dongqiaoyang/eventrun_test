@@ -57,12 +57,52 @@ resource "google_compute_firewall" "sspark-ingress-rule" {
   }
 }
 
+#### create sspark service account
+
+resource "google_service_account" "sspark" {
+  account_id   = "sspark"
+  display_name = "sspark Service Account"
+}
+
+resource "google_service_account_iam_member" "sspark-account-iam" {
+  service_account_id = google_service_account.sspark.name
+  role = "roles/iam.serviceAccountUser"
+  member = "domain:accenture.com"
+}
+
 #### create sspark cloud run app (deploy)
 
+resource "google_cloud_run_service" "sspark" {
+  name     = "sspark"
+  location = "northamerica-northeast1"
 
+
+  template {
+    spec {
+      containers {
+        image = "gcr.io/acn-montreal-ai-hackathon/sspark"
+      }
+      service_account_name = google_service_account.sspark.email
+      timeout_seconds = 600
+    }
+  }
+
+}
 
 #### create sspark pubsub subsription 
 
+resource "google_pubsub_subscription" "sspark" {
+  name  = "sspark-push-subscription"
+  topic = google_pubsub_topic.sspark-topic.name
+
+  ack_deadline_seconds = 600
 
 
-#### create sspark service account
+  push_config {
+    push_endpoint = google_cloud_run_service.sspark.status[0].url
+    oidc_token {
+	service_account_email = google_service_account.sspark.email
+	}
+  }
+}
+
