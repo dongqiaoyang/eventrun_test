@@ -36,7 +36,7 @@ resource "google_compute_network" "sspark-network" {
 }
 
 resource "google_compute_subnetwork" "sspark-private-subnet" {
-  name          = "sspark-private-subnet"
+  name          = "spark"
   ip_cidr_range = "10.0.0.0/8"
   region        = "northamerica-northeast1"
   network       = google_compute_network.sspark-network.id
@@ -64,11 +64,45 @@ resource "google_service_account" "sspark" {
   display_name = "sspark Service Account"
 }
 
-resource "google_service_account_iam_member" "sspark-account-iam" {
-  service_account_id = google_service_account.sspark.name
-  role = "roles/iam.serviceAccountUser"
-  member = "domain:accenture.com"
+resource "google_project_iam_policy" "project" {
+  project     = var.project_id
+  policy_data = data.google_iam_policy.admin.policy_data
 }
+
+data "google_iam_policy" "admin" {
+  binding {
+    role = "roles/run.invoker"
+
+    members = [
+      format("serviceAccount:%s", google_service_account.sspark.email)
+    ]
+  }
+
+  binding {
+    role = "roles/dataproc.editor"
+
+    members = [
+      format("serviceAccount:%s", google_service_account.sspark.email)
+    ]
+	}
+	
+  binding {
+    role = "roles/dataproc.worker"
+
+    members = [
+      format("serviceAccount:%s", google_service_account.sspark.email)
+    ]
+  }
+  
+  binding {
+    role = "roles/dataproc.serviceAgent"
+
+    members = [
+      format("serviceAccount:%s", google_service_account.sspark.email)
+    ]
+  }
+}
+
 
 #### create sspark cloud run app (deploy)
 
@@ -80,13 +114,32 @@ resource "google_cloud_run_service" "sspark" {
   template {
     spec {
       containers {
-        image = "gcr.io/acn-montreal-ai-hackathon/sspark"
+        image = format("gcr.io/%s/sspark", var.project_id)
+		
       }
       service_account_name = google_service_account.sspark.email
       timeout_seconds = 600
     }
+	metadata {
+		annotations={
+        "run.googleapis.com/client-name": "gcloud"
+        "client.knative.dev/user-image": format("gcr.io/%s/sspark", var.project_id)
+        "run.googleapis.com/client-version": "367.0.0"
+		"run.googleapis.com/execution-environment": "gen2"
+		
+		}
+	}
   }
-
+  
+  metadata {
+	annotations={
+	  "run.googleapis.com/launch-stage": "BETA"
+	  "run.googleapis.com/client-name": "gcloud"
+	  "client.knative.dev/user-image": format("gcr.io/%s/sspark", var.project_id)
+	  "run.googleapis.com/client-version": "367.0.0"
+	  "run.googleapis.com/ingress-status": "internal"
+	}
+    }
 }
 
 #### create sspark pubsub subsription 
