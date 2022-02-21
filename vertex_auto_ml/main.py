@@ -54,7 +54,7 @@ def gcloud_run(message):
     from os import listdir
     print(listdir())
     
-    import autoML_tabular
+    import pipeline_ref
     from datetime import datetime
     import google.cloud.aiplatform as aip
     from kfp.v2 import compiler  # noqa: F811
