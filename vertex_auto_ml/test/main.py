@@ -5,8 +5,8 @@ from base64 import b64decode
 from datetime import datetime
 import subprocess
 import ast
-
-
+import os
+from os import listdir
 app = FastAPI()
 
 class Message(BaseModel):
@@ -32,26 +32,21 @@ def gcloud_run(message):
     print('process starts')
     parameter=ast.literal_eval(str(message))
     print(parameter)
-    # p=subprocess.run(['/bin/bash','gcloud_run.sh',project, job_file], universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # print(p.stdout)
-    # print(p.stderr)
-    # print(p.returncode)
-    # execute the pipeline
-    
-    # from google.cloud import storage
-    # storage_client = storage.Client(project=PROJECT_ID)
-    # print(storage_client)
-    # bucket = storage_client.bucket("vertex-dse-cicd-test-lab-4c0841")
-    # print(bucket)
-    # blob = bucket.blob("pipelines/autoML_tabular.py")
-    # blob.download_to_filename("pipeline_ref.py")
-    
-    p=subprocess.run(['/bin/bash','gcloud_run.sh'], universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # Fetch the input parameters
+    ref_file_path=parameter['ref_file_path']
+    PROJECT_ID=parameter['PROJECT_ID']
+    BUCKET_NAME=parameter['BUCKET_NAME']
+    base=os.path.basename(ref_file_path)
+    ref_name=os.path.splitext(base)[0]
+    # Copy the ref file to the instance
+
+    print(listdir())
+    p=subprocess.run(['/bin/bash','gcloud_run.sh',ref_file_path], universal_newlines=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     print(p.stdout)
     print(p.stderr)
     print(p.returncode)
     
-    from os import listdir
+    # Check dir after file movement
     print(listdir())
     
     import pipeline_ref
@@ -59,9 +54,8 @@ def gcloud_run(message):
     import google.cloud.aiplatform as aip
     from kfp.v2 import compiler  # noqa: F811
 
-    REGION="northamerica-northeast1"
-    PROJECT_ID = "dse-cicd-test-lab-4c0841" 
-    BUCKET_NAME = "gs://vertex-dse-cicd-test-lab-4c0841"
+    # PROJECT_ID = "dse-cicd-test-lab-4c0841" 
+    # BUCKET_NAME = "gs://vertex-dse-cicd-test-lab-4c0841"
     PIPELINE_ROOT = "{}".format(BUCKET_NAME)
     TIMESTAMP = datetime.now().strftime("%Y%m%d%H%M%S")
     aip.init(project=PROJECT_ID, staging_bucket=BUCKET_NAME)
@@ -72,14 +66,14 @@ def gcloud_run(message):
 
     compiler.Compiler().compile(
         pipeline_func=pipeline_ref.main(),
-        package_path="tabular regression_pipeline.json".replace(" ", "_"),
+        package_path="{}.json".format(ref_name),
     )
 
-    DISPLAY_NAME = "cal_housing_" + TIMESTAMP
+    DISPLAY_NAME = string(ref_name) + TIMESTAMP
 
     job = aip.PipelineJob(
         display_name=DISPLAY_NAME,
-        template_path="tabular regression_pipeline.json".replace(" ", "_"),
+        template_path="{}.json".format(ref_name),
         pipeline_root=PIPELINE_ROOT,
         enable_caching=False,
         location= "northamerica-northeast1"

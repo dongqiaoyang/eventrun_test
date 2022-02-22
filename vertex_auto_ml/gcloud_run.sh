@@ -1,1 +1,0 @@
-gsutil cp gs://vertex-dse-cicd-test-lab-4c0841/pipelines/autoML_tabular.py pipeline_ref.py
