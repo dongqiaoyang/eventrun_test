@@ -1,0 +1,24 @@
+steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'cb-cloud-run-serverless-spark-deploy'
+    entrypoint: 'bash'
+    dir: .
+    args:
+      - '-c'
+      - |
+        gcloud beta run deploy sspark --image gcr.io/${_GCR_PROJECT}/exegol-ai/builders/serverless_spark --region northamerica-northeast1 --service-account spark-serverless@${_KEY_PROJECT}.iam.gserviceaccount.com --timeout 600 --execution-environment gen2
+		
+substitutions:
+  _KEY_PROJECT: ${_KEY_PROJECT}
+  _KEY_VERSION: "latest"
+  _GITHUB_KEY_PROJECT_ID: ${_GITHUB_KEY_PROJECT_ID}
+  _GITHUB_KEY_VERSION: ${_GITHUB_KEY_VERSION}
+  _BASE_BRANCH: "main"
+  _TEAM_NAME: ${_TEAM_NAME}
+  _BASE_REPO_URL: ${_BASE_REPO_URI}
+  _STATE_BUCKET: ${_BACKEND_CONFIG_BUCKET}
+  _GCR_PROJECT: ${_GCR_PROJECT}
+  _PROJECT_TYPE: ${_PROJECT_TYPE}
+  _BUILD_SA: "bilayer-sa"
+
+timeout: 600s
