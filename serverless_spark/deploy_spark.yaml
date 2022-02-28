@@ -6,7 +6,7 @@ steps:
     args:
       - '-c'
       - |
-        gcloud beta run deploy sspark --image gcr.io/${_GCR_PROJECT}/exegol-ai/builders/serverless_spark --region northamerica-northeast1 --service-account spark-serverless@${_KEY_PROJECT}.iam.gserviceaccount.com --timeout 600 --execution-environment gen2
+        gcloud beta run deploy sspark --image gcr.io/${_GCR_PROJECT}/exegol-ai/builders/serverless_spark --region northamerica-northeast1 --service-account bilayer-sa@${_KEY_PROJECT}.iam.gserviceaccount.com --timeout 600 --execution-environment gen2
 		
 substitutions:
   _KEY_PROJECT: ${_KEY_PROJECT}
