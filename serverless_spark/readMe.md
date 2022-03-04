@@ -31,3 +31,8 @@ gcloud pubsub subscriptions create cloud-run --topic sspark \
    --push-auth-service-account=scheduler-test@cio-exegol-lab-3dabae.iam.gserviceaccount.com --ack-deadline=600
 ```
 
+# Sample pub sub message
+```
+{"project": "dse-cicd-test-lab-4c0841", "job_file": "job_1/sample.py", "custom_image_path": "default"}
+{"project": "dse-cicd-test-lab-4c0841", "job_file": "job_1/sample.py", "custom_image_path": "gcr.io/cio-gke-devops-e4993356/exegol-ai/tests/custom_spark"}
+```

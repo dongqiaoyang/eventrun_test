@@ -1,22 +1,26 @@
-def main(): 
+def main(mapping): 
+# def main(var1,var2): 
+    print(mapping)
+    
     import kfp
     from google.cloud import aiplatform
     from google_cloud_pipeline_components import aiplatform as gcc_aip
-    # from kfp import dsl
-    # from kfp.v2.dsl import component
     from datetime import datetime
 
     TIMESTAMP = datetime.now().strftime("%Y%m%d%H%M%S")
     REGION="northamerica-northeast1"
-    PROJECT_ID = "dse-cicd-test-lab-4c0841" 
-    BUCKET_NAME = "gs://vertex-dse-cicd-test-lab-4c0841"
+    # PROJECT_ID = "dse-cicd-test-lab-4c0841" 
+    PROJECT_ID = mapping['PROJECT_ID']
+    # BUCKET_NAME = "gs://vertex-dse-cicd-test-lab-4c0841"
+    BUCKET_NAME = mapping['BUCKET_NAME']
     PIPELINE_ROOT = "{}".format(BUCKET_NAME)
 
     # Define AutoML tabular regression model pipeline that uses components from google_cloud_pipeline_components
 
-    TRAIN_FILE_NAME = "california_housing_train.csv"
+    # TRAIN_FILE_NAME = "california_housing_train.csv"
 
-    gcs_csv_path = f"{PIPELINE_ROOT}/data/{TRAIN_FILE_NAME}"
+    # gcs_csv_path = f"{PIPELINE_ROOT}/data/{TRAIN_FILE_NAME}"
+    gcs_csv_path = mapping['gcs_csv_path']
 
     @kfp.dsl.pipeline(name="automl-tab-training-v2")
     def pipeline(project: str = PROJECT_ID, region: str = REGION):

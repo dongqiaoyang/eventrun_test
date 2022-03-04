@@ -1,4 +1,4 @@
-## Build image
+	## Build image
 ```bash
 gcloud builds submit --tag gcr.io/dse-cicd-test-lab-4c0841/automl
 ```
