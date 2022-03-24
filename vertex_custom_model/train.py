@@ -44,7 +44,7 @@ print('accuracy is:',score)
 dump(skmodel, "model.joblib")
 
 # Upload the saved model file to GCS
-bucket = storage_client.get_bucket("ai-files-acn-mtl-data-studio-sandbox")
+# bucket = storage_client.get_bucket("ai-files-acn-mtl-data-studio-sandbox")
 model_directory = os.environ["AIP_MODEL_DIR"]
 storage_path = os.path.join(model_directory, "model.joblib")
 blob = storage.blob.Blob.from_string(storage_path, client=storage_client)

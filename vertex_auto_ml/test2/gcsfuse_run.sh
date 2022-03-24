@@ -7,7 +7,8 @@ set -eo pipefail
 mkdir -p /mnt/gcs
 
 echo "Mounting GCS Fuse."
-gcsfuse --debug_gcs --debug_fuse --implicit-dirs $BUCKET $MNT_DIR 
+# gcsfuse --debug_gcs --debug_fuse --implicit-dirs $BUCKET $MNT_DIR 
+gcsfuse -o rw,allow_other -file-mode=777 -dir-mode=777 --foreground --debug_http --debug_gcs --debug_fuse --implicit-dirs $BUCKET $MNT_DIR 
 echo "Mounting completed."
 
 # cp -rf e2e_test.py /mnt/gcs/

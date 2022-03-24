@@ -1,11 +1,11 @@
 	## Build image
 ```bash
-gcloud builds submit --tag gcr.io/dse-cicd-test-lab-4c0841/automl
+gcloud builds submit --tag gcr.io/dse-cicd-test-lab-4c0841/fuse
 ```
 
 ## Deploy the image to Cloud Run 
 ```bash
-gcloud beta run deploy vertex --image gcr.io/dse-cicd-test-lab-4c0841/automl --region northamerica-northeast1 --service-account vertex-pipeline-user@dse-cicd-test-lab-4c0841.iam.gserviceaccount.com --timeout 600 --execution-environment gen2
+gcloud beta run deploy fuse --image gcr.io/dse-cicd-test-lab-4c0841/fuse --region northamerica-northeast1 --service-account vertex-pipeline-user@dse-cicd-test-lab-4c0841.iam.gserviceaccount.com --timeout 600 --execution-environment gen2
 ```
 
 # Create pubsub topic

@@ -1,0 +1,149 @@
+{
+  "pipelineSpec": {
+    "components": {
+      "comp-tabular-dataset-create": {
+        "executorLabel": "exec-tabular-dataset-create",
+        "inputDefinitions": {
+          "parameters": {
+            "display_name": {
+              "type": "STRING"
+            },
+            "gcs_source": {
+              "type": "STRING"
+            },
+            "labels": {
+              "type": "STRING"
+            },
+            "location": {
+              "type": "STRING"
+            },
+            "project": {
+              "type": "STRING"
+            }
+          }
+        },
+        "outputDefinitions": {
+          "artifacts": {
+            "dataset": {
+              "artifactType": {
+                "schemaTitle": "google.VertexDataset",
+                "schemaVersion": "0.0.1"
+              }
+            }
+          }
+        }
+      }
+    },
+    "deploymentSpec": {
+      "executors": {
+        "exec-tabular-dataset-create": {
+          "container": {
+            "args": [
+              "--method.project",
+              "{{$.inputs.parameters['project']}}",
+              "--method.location",
+              "{{$.inputs.parameters['location']}}",
+              "--method.display_name",
+              "{{$.inputs.parameters['display_name']}}",
+              "--method.gcs_source",
+              "{{$.inputs.parameters['gcs_source']}}",
+              "--method.labels",
+              "{{$.inputs.parameters['labels']}}",
+              "--executor_input",
+              "{{$}}",
+              "--resource_name_output_artifact_uri",
+              "{{$.outputs.artifacts['dataset'].uri}}"
+            ],
+            "command": [
+              "python3",
+              "-m",
+              "google_cloud_pipeline_components.container.aiplatform.remote_runner",
+              "--cls_name",
+              "TabularDataset",
+              "--method_name",
+              "create"
+            ],
+            "image": "gcr.io/ml-pipeline/google-cloud-pipeline-components:0.3.1"
+          }
+        }
+      }
+    },
+    "pipelineInfo": {
+      "name": "automl-tab-training-v2-a"
+    },
+    "root": {
+      "dag": {
+        "tasks": {
+          "tabular-dataset-create": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-tabular-dataset-create"
+            },
+            "inputs": {
+              "parameters": {
+                "display_name": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "housing"
+                    }
+                  }
+                },
+                "gcs_source": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "vertex_pipelines_acn-mtl-data-studio-sandbox/data/california_housing_train.csv"
+                    }
+                  }
+                },
+                "labels": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "{}"
+                    }
+                  }
+                },
+                "location": {
+                  "runtimeValue": {
+                    "constantValue": {
+                      "stringValue": "northamerica-northeast1"
+                    }
+                  }
+                },
+                "project": {
+                  "componentInputParameter": "project"
+                }
+              }
+            },
+            "taskInfo": {
+              "name": "tabular-dataset-create"
+            }
+          }
+        }
+      },
+      "inputDefinitions": {
+        "parameters": {
+          "project": {
+            "type": "STRING"
+          },
+          "region": {
+            "type": "STRING"
+          }
+        }
+      }
+    },
+    "schemaVersion": "2.0.0",
+    "sdkVersion": "kfp-1.8.11"
+  },
+  "runtimeConfig": {
+    "parameters": {
+      "project": {
+        "stringValue": "acn-mtl-data-studio-sandbox"
+      },
+      "region": {
+        "stringValue": "northamerica-northeast1"
+      }
+    }
+  }
+}
